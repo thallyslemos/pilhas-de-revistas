@@ -45,8 +45,8 @@ tempo expresso em horas, minutos e segundos durante os quais cada uma delas perm
 • Associação de código numérico único a cada uma das mercadorias que constam na relação acima, para indicação das
 respectivas quantidades em cada compra (não há exigência de que todos os itens sejam comprados em cada compra);
 • Consultas sobre as revistas empilhadas, a saber: a) dados de título, número de edição, mês e ano de publicação e número de
-volume (este último, se for o caso) da última revista empilhada; b) dados de título, número de edição, mês e ano de publicação e
+volume (este último, se for o caso) da última revista empilhada; *** OK *** b) dados de título, número de edição, mês e ano de publicação e
 número de volume (este último, se for o caso) da última revista desempilhada, para fins de entrega ao cliente da última compra
-que tenha se enquadrado nos critérios da promoção aludidos anteriormente; c) tempo médio de permanência de revistas
-entregues aos clientes em pilha ao lado do checkout de caixa; d) relação de revistas empilhadas por ano de publicação; e e)
-relação de revistas desempilhadas por ano de publicação.
+que tenha se enquadrado nos critérios da promoção aludidos anteriormente;   ) tempo médio de permanência de revistas
+entregues aos clientes em pilha ao lado do checkout de caixa;  d) *** OK *** relação de revistas empilhadas por ano de publicação; e e) *** OK *** 
+relação de revistas desempilhadas por ano de publicação. *** OK *** 
