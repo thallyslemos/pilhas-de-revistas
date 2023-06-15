@@ -39,15 +39,13 @@ public class App {
         // Stack<Revista> revista_mesmo_ano = new Stack<>();
         Stack<Revista> pilha_temporaria = new Stack<>();
         pilha_temporaria.addAll(pilha_revistas);
+        System.out.println("\nRevistas do ano  " + ano + ": ");
 
         while (!pilha_temporaria.isEmpty()) {
             Revista revista = pilha_temporaria.pop();
-            System.out.println("\nRevistas do ano  " + ano + ": ");
             if (revista.getAno_publicacao() == ano) {
                 System.out.println(revista.toString());
-            } else {
-                System.out.println("Não há revistas cadastradas com esse ano");
-            }
+            } 
         }
         // while (!pilha_revistas.isEmpty()) {
         // Revista revista = pilha_revistas.pop();
