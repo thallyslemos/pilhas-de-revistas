@@ -10,7 +10,7 @@ import java.util.Stack;
 public class App {
 
     public static void menuPrincipal() {
-        System.out.print("\033[H\033[2J");
+        limpaTerminal();
         System.out.println("-------- Menu --------\n");
         System.out.println("(1) - Pilha de revistas");
         System.out.println("(2) - Vendas");
@@ -20,7 +20,6 @@ public class App {
     }
 
     public static void menuRevistas() {
-        System.out.print("\033[H\033[2J");
         System.out.println("------- Pilha de Revistas -------\n");
         System.out.println("(1) - Empilhar nova revista");
         System.out.println("(2) - Consultar próxima revista da pilha");
@@ -33,7 +32,7 @@ public class App {
     }
 
     public static void menuVenda() {
-        System.out.print("\033[H\033[2J");
+        limpaTerminal();
         System.out.println("--------- Vendas ---------\n");
         System.out.println("(1) - Listar todas as vendas");
         System.out.println("(2) - Incluir nova venda");
@@ -46,7 +45,7 @@ public class App {
         System.out.println("\n-----------------------------------------");
         System.out.println("(1) - Incluir novo item");
         System.out.println("(2) - Excluir item");
-        System.out.println("(0) - Finalizar venda\n");
+        System.out.println("(3) - Finalizar venda\n");
         System.out.print("Escolha uma opção: ");
     }
 
@@ -59,10 +58,13 @@ public class App {
                 .orElse(null);
     }
 
-    public static void notaCompra(Map<Mercadoria, Integer> lista_compra, Map<Integer, Mercadoria> estoque) {
-                    System.out.printf("%-7s| %-35s| %-14s| %-11s| %-13s%n", "Código","Nome", "Preço Unitário", "Quantidade", "Valor Total");
-        System.out.println("----------------------------------------------------------------------------------------------");
+    public static int notaCompra(Map<Mercadoria, Integer> lista_compra, Map<Integer, Mercadoria> estoque) {
         double valor_total_compra = 0;
+        limpaTerminal();
+        System.out.printf("%-7s| %-35s| %-14s| %-11s| %-13s%n", "Código", "Nome", "Preço Unitário", "Quantidade",
+                "Valor Total");
+        System.out.println(
+                "----------------------------------------------------------------------------------------------");
         for (Map.Entry<Mercadoria, Integer> entry : lista_compra.entrySet()) {
             Mercadoria mercadoria = entry.getKey();
             int quantidade = entry.getValue();
@@ -72,10 +74,14 @@ public class App {
             Integer id = buscarChavePorValor(estoque, mercadoria);
 
             System.out.printf("%-7d| %-35s| R$ %-11.2f| %-11d| R$ %-11.2f%n",
-                   id, mercadoria.getNome(), preco_unitario, quantidade, valor_total_item);
+                    id, mercadoria.getNome(), preco_unitario, quantidade, valor_total_item);
         }
         // Adcionar itens
-        System.out.println("\nValor Total: " + String.format("R$ %.2f",valor_total_compra)); // Adcionar valor total
+        System.out.println("\nValor Total: " + String.format("R$ %.2f", valor_total_compra)); // Adcionar valor total
+
+        int quantidade_revistas = (int) Math.floor(valor_total_compra / 100);
+        System.out.println("\nRevistas de brinde: " + String.format(" %-3s", quantidade_revistas)); // Adcionar valor
+        return quantidade_revistas;
     }
 
     public static void revistas_por_ano(Stack<Revista> pilha_revistas, int ano) {
@@ -107,7 +113,6 @@ public class App {
     }
 
     public static void cadastraRevista(Scanner scanner, Stack<Revista> pilha_revistas) {
-        System.out.print("\033[H\033[2J");
         System.out.println("Digite o título: ");
         String titulo = scanner.next();
         System.out.println("Digite número de edição: ");
@@ -133,12 +138,19 @@ public class App {
      * exibe o tempo
      * armazena os dados das revistas retiradas
      */
-    public static void removeRevista(Stack<Revista> pilha_revistas, Stack<Revista> historico_revistas) {
-        Revista revista_retirada = pilha_revistas.pop();
-        revista_retirada.setData_retirada(LocalDateTime.now());
+    public static void removeRevista(Stack<Revista> pilha_revistas, Stack<Revista> historico_revistas, int quantidade) {
+        for (int i = 0; i < quantidade; i++) {
+            if (pilha_revistas.size() > 0) {
+                Revista revista_retirada = pilha_revistas.pop();
+                revista_retirada.setData_retirada(LocalDateTime.now());
 
-        historico_revistas.add(revista_retirada);
-        System.out.println("Revista removida da pilha: " + revista_retirada.toString());
+                historico_revistas.add(revista_retirada);
+                System.out.println(revista_retirada.toString());
+            } else {
+                System.out.println("Não há mais revistas de brinde ddisponíveis...");
+                break;
+            }
+        }
     }
 
     // meto recebe uma revista que foi retirada da pilha e retorna o tempo total que
@@ -155,6 +167,25 @@ public class App {
         System.out.println("Data de entrada: " + revista.getData_cadastro().toLocalDate() + " | Data de saída: "
                 + revista.getData_retirada().toLocalDate());
         System.out.println("Diferença de tempo: " + diffTime);
+    }
+
+    public static void limpaTerminal() {
+        try {
+            // Verifica qual é o sistema operacional
+            String os = System.getProperty("os.name").toLowerCase();
+
+            // Limpa o terminal de acordo com o sistema operacional
+            if (os.contains("win")) {
+                // Comando para limpar o terminal no Windows
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                // Comando para limpar o terminal em sistemas Unix-like (Linux, macOS)
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+            }
+        } catch (Exception e) {
+            // Tratar qualquer exceção que possa ocorrer
+            e.printStackTrace();
+        }
     }
 
     public static void cria_estoque(Map<Integer, Mercadoria> estoque) {
@@ -199,23 +230,58 @@ public class App {
         estoque.put(39, new Mercadoria("Vodca 998ml", 29.90));
     }
 
+    public static void inicializaPilhaRevistas(Stack<Revista> pilha_revistas) {
+        pilha_revistas.push(new Revista("IEEE Computer Magazine", 1, 1, 2022, 1));
+        pilha_revistas.push(new Revista("ACM Transactions on Computer Systems", 2, 3, 2022, 1));
+        pilha_revistas.push(new Revista("Journal of Computer Science and Technology", 3, 5, 2022, 2));
+        pilha_revistas.push(new Revista("IEEE Transactions on Computers", 4, 7, 2022, 2));
+        pilha_revistas.push(new Revista("Communications of the ACM", 5, 9, 2022, 3));
+        // pilha_revistas.push(new Revista("IEEE Software Magazine", 6, 11, 2022, 3));
+        // pilha_revistas.push(new Revista("Journal of Parallel and Distributed
+        // Computing", 7, 2, 2023, 4));
+        // pilha_revistas.push(new Revista("ACM Computing Surveys", 8, 4, 2023, 4));
+        // pilha_revistas.push(new Revista("Journal of Computer Vision and Image
+        // Understanding", 9, 6, 2023, 5));
+        // pilha_revistas.push(new Revista("Information and Computation", 10, 8, 2023,
+        // 5));
+    }
+
     public static void inserir_produto(Integer codigo_produto, Integer quantidade, Map<Integer, Mercadoria> estoque,
             Map<Mercadoria, Integer> lista_compra) {
         lista_compra.put(estoque.get(codigo_produto), quantidade);
 
     }
 
+    public static void listarProdutos(Map<Integer, Mercadoria> estoque) {
+        System.out.println("Lista de produtos: ");
+
+        for (Map.Entry<Integer, Mercadoria> entry : estoque.entrySet()) {
+            Integer codigo = entry.getKey();
+            Mercadoria mercadoria = entry.getValue();
+
+            System.out.printf("Código: %d\n", codigo);
+            System.out.println(mercadoria.toString());
+            System.out.println("--------------------------");
+        }
+    }
+
     // recebe o historico de rebistas reitradas da pilha e exibe o tempo médio de
     // permanenciia
     // das revistas na pilha
-    public static void tempo_medio_pilha(Stack<Revista> pilha_revista) {
-        if (pilha_revista.size() > 0) {
-            Duration soma_tempo = Duration.ofSeconds(0);
+    public static void tempo_medio_pilha(Stack<Revista> pilha_revista, Stack<Revista> revistas_retiradas) {
+        Duration soma_tempo = Duration.ofSeconds(0);
+
+        if (pilha_revista.size() > 0 || revistas_retiradas.size() > 0) {
             for (Revista r : pilha_revista) {
                 soma_tempo = soma_tempo.plus(r.tempo_na_pilha());
             }
+            for (Revista r : revistas_retiradas) {
+                soma_tempo = soma_tempo.plus(r.tempo_na_pilha());
+            }
 
-            long diffInSeconds = soma_tempo.toSeconds() / pilha_revista.size();
+            int numero_total_revistas = pilha_revista.size() + revistas_retiradas.size();
+            System.out.println(numero_total_revistas);
+            long diffInSeconds = soma_tempo.toSeconds() / numero_total_revistas;
             long hours = diffInSeconds / 3600;
             long minutes = (diffInSeconds % 3600) / 60;
             long seconds = diffInSeconds % 60;
@@ -223,12 +289,14 @@ public class App {
             // Exibe a diferença de tempo no formato hh:mm:ss
             String diffTime = String.format("%03d:%02d:%02d", hours, minutes, seconds);
             System.out.println("\nTempo médio das revistas na pilha: " + diffTime);
-        } else {
-            System.out.println("Nenhuma revista foi retirada da pilha!");
+        }else {
+            System.out.println("Sem dados para exibir...");
         }
+
     }
 
     public static void main(String[] args) throws Exception {
+
         Scanner scanner = new Scanner(System.in);
         // Lista para manipulação dos itens da compra
         Map<Mercadoria, Integer> lista_compra = new HashMap<>();
@@ -238,6 +306,7 @@ public class App {
         Map<Integer, Mercadoria> estoque = new HashMap<>();
 
         cria_estoque(estoque);
+        inicializaPilhaRevistas(pilha_revistas);
 
         int menu = 1;
 
@@ -279,8 +348,7 @@ public class App {
                                 System.out.println("-----------------------");
                                 break;
                             case 4:
-                                tempo_medio_pilha(historico_revistas);
-                                ;
+                                tempo_medio_pilha(historico_revistas, pilha_revistas);
                                 break;
                             case 5:
                                 System.out.println("Digite um dos anos disponiveis: ");
@@ -294,7 +362,7 @@ public class App {
                                 break;
                             case 6:
                                 // limpa terminal
-                                System.out.print("\033[H\033[2J");
+                                limpaTerminal();
                                 break;
                             case 0:
                                 break;
@@ -306,35 +374,44 @@ public class App {
                     int terceiro_menu = 1;
 
                     while (terceiro_menu != 0) {
-                        // System.out.print("\033[H\033[2J");
+                        // limpaTerminal();
                         menuVenda();
                         terceiro_menu = scanner.nextInt();
 
                         switch (terceiro_menu) {
                             case 1:
-                                System.out.println("Listar vendas");
                                 break;
                             case 2:
                                 int quarto_menu = 1;
 
                                 while (quarto_menu != 0) {
-                                    // System.out.print("\033[H\033[2J");
-                                    notaCompra(lista_compra, estoque); // adcionar o número da venda
+                                    limpaTerminal();
+                                    System.out.println("Venda");
+                                    if (lista_compra.size() > 0) {
+                                        notaCompra(lista_compra, estoque); // adcionar o número da venda
+                                    } else {
+                                        System.out.println("Inicie a venda: ");
+                                    }
                                     menuRealizaVenda();
                                     quarto_menu = scanner.nextInt();
 
                                     switch (quarto_menu) {
                                         case 1:
+                                            listarProdutos(estoque);
+
                                             System.out.println("Digite o código do produto a ser adicionado: ");
                                             int id_produto = scanner.nextInt();
                                             System.out.println("Digite a quantidade: ");
                                             int qnt_produto = scanner.nextInt();
                                             inserir_produto(id_produto, qnt_produto, estoque, lista_compra);
+                                            scanner.nextLine();
 
                                             break;
                                         case 2:
-                                            System.out.print("\033[H\033[2J");
-                                            System.out.println("Digite o número do produto na lista a ser excluido: ");
+                                            System.out.println("Exclusão de produtos da compra: \n");
+                                            limpaTerminal();
+                                            notaCompra(lista_compra, estoque);
+                                            System.out.println("Digite o código do produto na lista a ser excluido: ");
                                             int n_produto = scanner.nextInt();
                                             Mercadoria produto = estoque.get(n_produto);
                                             System.out.println(lista_compra.remove(produto));
@@ -343,8 +420,20 @@ public class App {
 
                                             // }
                                             // }
+                                            scanner.nextLine();
                                             break;
-                                        case 0:
+                                        case 3:
+                                            limpaTerminal();
+                                            if (lista_compra.size() > 0) {
+                                                int revistas = notaCompra(lista_compra, estoque);
+                                                removeRevista(pilha_revistas, historico_revistas, revistas);
+                                            } else {
+                                                System.out.println("Não há mercadorias para serem processadas...");
+                                            }
+                                            System.out.println("Tecle (0) para sair: ");
+                                            quarto_menu = scanner.nextInt();
+                                            break;
+                                        default:
                                             break;
                                     }
                                     ;
@@ -352,7 +441,7 @@ public class App {
 
                                 break;
                             case 3:
-                                System.out.print("\033[H\033[2J");
+                                limpaTerminal();
                                 break;
                             case 0:
                                 // Voltar para o menu
@@ -362,7 +451,7 @@ public class App {
                     break;
 
                 case 3:
-                    System.out.print("\033[H\033[2J");
+                    limpaTerminal();
                     break;
                 case 0:
                     System.out.println("Programa encerrado...");
