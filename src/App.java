@@ -34,9 +34,8 @@ public class App {
     public static void menuVenda() {
         limpaTerminal();
         System.out.println("--------- Vendas ---------\n");
-        System.out.println("(1) - Listar todas as vendas");
-        System.out.println("(2) - Incluir nova venda");
-        System.out.println("(3) - Limpar terminal");
+        System.out.println("(1) - Incluir nova venda");
+        System.out.println("(2) - Limpar terminal");
         System.out.println("(0) - Voltar ao menu principal\n");
         System.out.print("Escolha uma opção: ");
     }
@@ -236,14 +235,11 @@ public class App {
         pilha_revistas.push(new Revista("Journal of Computer Science and Technology", 3, 5, 2022, 2));
         pilha_revistas.push(new Revista("IEEE Transactions on Computers", 4, 7, 2022, 2));
         pilha_revistas.push(new Revista("Communications of the ACM", 5, 9, 2022, 3));
-        // pilha_revistas.push(new Revista("IEEE Software Magazine", 6, 11, 2022, 3));
-        // pilha_revistas.push(new Revista("Journal of Parallel and Distributed
-        // Computing", 7, 2, 2023, 4));
-        // pilha_revistas.push(new Revista("ACM Computing Surveys", 8, 4, 2023, 4));
-        // pilha_revistas.push(new Revista("Journal of Computer Vision and Image
-        // Understanding", 9, 6, 2023, 5));
-        // pilha_revistas.push(new Revista("Information and Computation", 10, 8, 2023,
-        // 5));
+        pilha_revistas.push(new Revista("IEEE Software Magazine", 6, 11, 2022, 3));
+        pilha_revistas.push(new Revista("Journal of Parallel and Distributed Computing", 7, 2, 2023, 4));
+        pilha_revistas.push(new Revista("ACM Computing Surveys", 8, 4, 2023, 4));
+        pilha_revistas.push(new Revista("Journal of Computer Vision and Image Understanding", 9, 6, 2023, 5));
+        pilha_revistas.push(new Revista("Information and Computation", 10, 8, 2023, 5));
     }
 
     public static void inserir_produto(Integer codigo_produto, Integer quantidade, Map<Integer, Mercadoria> estoque,
@@ -380,8 +376,6 @@ public class App {
 
                         switch (terceiro_menu) {
                             case 1:
-                                break;
-                            case 2:
                                 int quarto_menu = 1;
 
                                 while (quarto_menu != 0) {
